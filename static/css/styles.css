@@ -921,3 +921,154 @@ h1 {
   width: 18px;
   height: 18px;
 }
+
+/* Theme Toggle Button */
+.btn-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(5px);
+}
+
+.btn-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-theme-toggle:active {
+  transform: translateY(0);
+}
+
+.btn-theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: transform 0.5s ease;
+}
+
+/* Light/Dark Toggle logic */
+body.light-theme .sun-icon {
+  display: none;
+}
+
+body:not(.light-theme) .moon-icon {
+  display: none;
+}
+
+/* Light Theme Variable Overrides */
+body.light-theme {
+  --bg-main: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.75);
+  --bg-header: rgba(248, 250, 252, 0.85);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-focus: rgba(59, 130, 246, 0.8);
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --primary-glow: rgba(59, 130, 246, 0.08);
+  --secondary-glow: rgba(139, 92, 246, 0.08);
+  
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+}
+
+/* Light Theme Components Adjustments */
+body.light-theme h1 {
+  background: linear-gradient(135deg, #0f172a 30%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .btn-theme-toggle,
+body.light-theme .btn-refresh,
+body.light-theme .btn-export {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .btn-theme-toggle:hover,
+body.light-theme .btn-refresh:hover,
+body.light-theme .btn-export:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .filter-pill {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-secondary);
+}
+
+body.light-theme .filter-pill:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+}
+
+body.light-theme .filter-pill.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+body.light-theme .search-input {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .search-input:focus {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme code {
+  background: rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .skeleton-badge,
+body.light-theme .skeleton-line {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media(min-width: 992px) {
+  body.light-theme .date-group::before {
+    background: rgba(0, 0, 0, 0.08);
+  }
+}
+
+body.light-theme .modal-container {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .tweet-textarea {
+  background: rgba(0, 0, 0, 0.02);
+  color: #0f172a;
+}
+
+body.light-theme .btn-copy {
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+}
+
+body.light-theme .btn-copy:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.25);
+  color: var(--text-primary);
+}
+
+body.light-theme .toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

@@ -8,6 +8,7 @@ let searchQuery = '';
 const feedContainer = document.getElementById('feed-container');
 const refreshBtn = document.getElementById('btn-refresh');
 const exportBtn = document.getElementById('btn-export');
+const themeToggleBtn = document.getElementById('btn-theme-toggle');
 const searchInput = document.getElementById('search-input');
 const filterPills = document.querySelectorAll('.filter-pill');
 const lastUpdatedEl = document.getElementById('last-updated-time');
@@ -31,11 +32,15 @@ const toastContainer = document.getElementById('toast-container');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize theme from storage
+  initTheme();
+  
   fetchReleases();
   
   // Event Listeners
   refreshBtn.addEventListener('click', () => fetchReleases(true));
   exportBtn.addEventListener('click', exportToCSV);
+  themeToggleBtn.addEventListener('click', toggleTheme);
   searchInput.addEventListener('input', handleSearch);
   
   filterPills.forEach(pill => {
@@ -493,4 +498,21 @@ function exportToCSV() {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
   showToast('Release notes exported to CSV!', 'success');
+}
+
+// Initialize theme from LocalStorage
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  } else {
+    document.body.classList.remove('light-theme');
+  }
+}
+
+// Toggle light/dark theme variables override
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light-theme');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  showToast(`Swapped to ${isLight ? 'Light' : 'Dark'} Mode!`, 'success');
 }

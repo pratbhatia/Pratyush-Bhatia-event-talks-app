@@ -7,6 +7,7 @@ let searchQuery = '';
 // DOM Elements
 const feedContainer = document.getElementById('feed-container');
 const refreshBtn = document.getElementById('btn-refresh');
+const exportBtn = document.getElementById('btn-export');
 const searchInput = document.getElementById('search-input');
 const filterPills = document.querySelectorAll('.filter-pill');
 const lastUpdatedEl = document.getElementById('last-updated-time');
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Event Listeners
   refreshBtn.addEventListener('click', () => fetchReleases(true));
+  exportBtn.addEventListener('click', exportToCSV);
   searchInput.addEventListener('input', handleSearch);
   
   filterPills.forEach(pill => {
@@ -297,6 +299,12 @@ function renderFeed() {
           ${update.content}
         </div>
         <div class="update-footer">
+          <button class="btn-copy" id="copy-btn-${entry.date.replace(/[^a-zA-Z0-9]/g, '')}-${index}">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+            Copy Text
+          </button>
           <button class="btn-tweet" id="tweet-btn-${entry.date.replace(/[^a-zA-Z0-9]/g, '')}-${index}">
             <svg viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -308,11 +316,15 @@ function renderFeed() {
       
       updatesList.appendChild(card);
       
-      // Bind Tweet button listener
+      // Bind Tweet and Copy button listeners
       setTimeout(() => {
         const tweetBtn = document.getElementById(`tweet-btn-${entry.date.replace(/[^a-zA-Z0-9]/g, '')}-${index}`);
         if (tweetBtn) {
           tweetBtn.addEventListener('click', () => openTweetModal(entry.date, update, entry.link));
+        }
+        const copyBtn = document.getElementById(`copy-btn-${entry.date.replace(/[^a-zA-Z0-9]/g, '')}-${index}`);
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => copyToClipboard(entry.date, update));
         }
       }, 0);
     });
@@ -426,4 +438,59 @@ function showToast(message, type = 'success') {
       toast.remove();
     }, 300);
   }, 4000);
+}
+
+// Copy update text to clipboard
+async function copyToClipboard(date, update) {
+  const cleanText = stripHtml(update.content).trim();
+  const textToCopy = `BigQuery Update (${date}) [${update.type}]:\n\n${cleanText}`;
+  try {
+    await navigator.clipboard.writeText(textToCopy);
+    showToast('Copied update details to clipboard!', 'success');
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+    showToast('Failed to copy to clipboard.', 'error');
+  }
+}
+
+// Export filtered release notes dataset to CSV
+function exportToCSV() {
+  if (filteredNotes.length === 0) {
+    showToast('No notes available to export.', 'error');
+    return;
+  }
+  
+  const csvRows = ["Date,Type,Update Content,Link"];
+  
+  filteredNotes.forEach(entry => {
+    entry.updates.forEach(update => {
+      const dateVal = entry.date;
+      const typeVal = update.type;
+      const contentVal = stripHtml(update.content).trim();
+      const linkVal = entry.link || "";
+      
+      // Escape double quotes by doubling them, and wrap text in quotes
+      const escapedDate = `"${dateVal.replace(/"/g, '""')}"`;
+      const escapedType = `"${typeVal.replace(/"/g, '""')}"`;
+      const escapedContent = `"${contentVal.replace(/"/g, '""')}"`;
+      const escapedLink = `"${linkVal.replace(/"/g, '""')}"`;
+      
+      csvRows.push(`${escapedDate},${escapedType},${escapedContent},${escapedLink}`);
+    });
+  });
+  
+  const csvString = csvRows.join("\r\n");
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `bigquery_release_notes_${new Date().toISOString().slice(0, 10)}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast('Release notes exported to CSV!', 'success');
 }

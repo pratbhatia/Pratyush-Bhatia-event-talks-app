@@ -139,7 +139,7 @@ h1 {
 }
 
 /* Buttons and Controls */
-.btn-refresh {
+.btn-refresh, .btn-export {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -156,13 +156,13 @@ h1 {
   backdrop-filter: blur(5px);
 }
 
-.btn-refresh:hover {
+.btn-refresh:hover, .btn-export:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
-.btn-refresh:active {
+.btn-refresh:active, .btn-export:active {
   transform: translateY(0);
 }
 
@@ -586,6 +586,7 @@ h1 {
   align-items: center;
   border-top: 1px solid var(--border-color);
   padding-top: 12px;
+  gap: 10px;
 }
 
 .btn-tweet {
@@ -612,6 +613,35 @@ h1 {
 }
 
 .btn-tweet svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.btn-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-copy:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.btn-copy svg {
   width: 14px;
   height: 14px;
   fill: currentColor;

@@ -10,8 +10,16 @@ const refreshBtn = document.getElementById('btn-refresh');
 const exportBtn = document.getElementById('btn-export');
 const themeToggleBtn = document.getElementById('btn-theme-toggle');
 const searchInput = document.getElementById('search-input');
+const searchClearBtn = document.getElementById('btn-search-clear');
 const filterPills = document.querySelectorAll('.filter-pill');
 const lastUpdatedEl = document.getElementById('last-updated-time');
+
+// Interactive Stats Card Elements
+const statCardAll = document.getElementById('stat-card-all');
+const statCardFeature = document.getElementById('stat-card-feature');
+const statCardIssue = document.getElementById('stat-card-issue');
+const statCardBreaking = document.getElementById('stat-card-breaking');
+const statCardChange = document.getElementById('stat-card-change');
 
 // Stats Elements
 const statTotal = document.getElementById('stat-total-val');
@@ -42,6 +50,22 @@ document.addEventListener('DOMContentLoaded', () => {
   exportBtn.addEventListener('click', exportToCSV);
   themeToggleBtn.addEventListener('click', toggleTheme);
   searchInput.addEventListener('input', handleSearch);
+  
+  // Clear search input listener
+  searchClearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    searchQuery = '';
+    searchClearBtn.style.display = 'none';
+    applyFiltersAndSearch();
+    searchInput.focus();
+  });
+  
+  // Bind Interactive Stats Card Clicks
+  if (statCardAll) statCardAll.addEventListener('click', () => triggerFilter('all'));
+  if (statCardFeature) statCardFeature.addEventListener('click', () => triggerFilter('feature'));
+  if (statCardIssue) statCardIssue.addEventListener('click', () => triggerFilter('issue'));
+  if (statCardBreaking) statCardBreaking.addEventListener('click', () => triggerFilter('breaking'));
+  if (statCardChange) statCardChange.addEventListener('click', () => triggerFilter('announcement_change'));
   
   filterPills.forEach(pill => {
     pill.addEventListener('click', (e) => {
@@ -164,6 +188,11 @@ function animateValue(obj, end, duration = 600) {
 // Search handler
 function handleSearch(e) {
   searchQuery = e.target.value.toLowerCase().trim();
+  if (e.target.value) {
+    searchClearBtn.style.display = 'flex';
+  } else {
+    searchClearBtn.style.display = 'none';
+  }
   applyFiltersAndSearch();
 }
 
@@ -329,7 +358,7 @@ function renderFeed() {
         }
         const copyBtn = document.getElementById(`copy-btn-${entry.date.replace(/[^a-zA-Z0-9]/g, '')}-${index}`);
         if (copyBtn) {
-          copyBtn.addEventListener('click', () => copyToClipboard(entry.date, update));
+          copyBtn.addEventListener('click', () => copyToClipboard(entry.date, update, copyBtn));
         }
       }, 0);
     });
@@ -446,12 +475,33 @@ function showToast(message, type = 'success') {
 }
 
 // Copy update text to clipboard
-async function copyToClipboard(date, update) {
+async function copyToClipboard(date, update, btnElement) {
   const cleanText = stripHtml(update.content).trim();
   const textToCopy = `BigQuery Update (${date}) [${update.type}]:\n\n${cleanText}`;
   try {
     await navigator.clipboard.writeText(textToCopy);
     showToast('Copied update details to clipboard!', 'success');
+    
+    // Inline visual feedback state transition
+    if (btnElement) {
+      const originalHtml = btnElement.innerHTML;
+      btnElement.innerHTML = `
+        <svg viewBox="0 0 24 24" style="fill: var(--color-feature); width: 14px; height: 14px; margin-right: 4px;">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+        Copied!
+      `;
+      btnElement.style.borderColor = 'var(--color-feature)';
+      btnElement.style.color = 'var(--color-feature)';
+      btnElement.disabled = true;
+      
+      setTimeout(() => {
+        btnElement.innerHTML = originalHtml;
+        btnElement.style.borderColor = '';
+        btnElement.style.color = '';
+        btnElement.disabled = false;
+      }, 2000);
+    }
   } catch (err) {
     console.error('Failed to copy text: ', err);
     showToast('Failed to copy to clipboard.', 'error');
@@ -515,4 +565,23 @@ function toggleTheme() {
   const isLight = document.body.classList.toggle('light-theme');
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
   showToast(`Swapped to ${isLight ? 'Light' : 'Dark'} Mode!`, 'success');
+}
+
+// Automatically navigate and filter matching pill
+function triggerFilter(filterValue) {
+  const targetPill = Array.from(filterPills).find(pill => pill.dataset.filter === filterValue);
+  if (targetPill) {
+    filterPills.forEach(p => p.classList.remove('active'));
+    targetPill.classList.add('active');
+    activeFilter = filterValue;
+    applyFiltersAndSearch();
+    
+    // Smooth scroll down to the filter segment on smaller viewports
+    const filterSegment = document.querySelector('.search-filter-bar');
+    if (filterSegment) {
+      filterSegment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    showToast(`Filtered feed by ${filterValue === 'announcement_change' ? 'Changes' : filterValue}!`, 'success');
+  }
 }

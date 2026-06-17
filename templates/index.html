@@ -63,23 +63,23 @@
       
       <!-- Stats Banner Overview -->
       <div class="stats-grid" role="region" aria-label="Updates statistics counts">
-        <div class="stat-card">
+        <div class="stat-card" id="stat-card-all" style="cursor: pointer;">
           <div class="stat-val" id="stat-total-val">0</div>
           <div class="stat-label">Total Logs</div>
         </div>
-        <div class="stat-card" style="border-bottom: 2px solid var(--color-feature);">
+        <div class="stat-card" id="stat-card-feature" style="border-bottom: 2px solid var(--color-feature); cursor: pointer;">
           <div class="stat-val" style="color: var(--color-feature);" id="stat-feature-val">0</div>
           <div class="stat-label">Features</div>
         </div>
-        <div class="stat-card" style="border-bottom: 2px solid var(--color-issue);">
+        <div class="stat-card" id="stat-card-issue" style="border-bottom: 2px solid var(--color-issue); cursor: pointer;">
           <div class="stat-val" style="color: var(--color-issue);" id="stat-issue-val">0</div>
           <div class="stat-label">Issues</div>
         </div>
-        <div class="stat-card" style="border-bottom: 2px solid var(--color-breaking);">
+        <div class="stat-card" id="stat-card-breaking" style="border-bottom: 2px solid var(--color-breaking); cursor: pointer;">
           <div class="stat-val" style="color: var(--color-breaking);" id="stat-breaking-val">0</div>
           <div class="stat-label">Breaking</div>
         </div>
-        <div class="stat-card" style="border-bottom: 2px solid var(--color-change);">
+        <div class="stat-card" id="stat-card-change" style="border-bottom: 2px solid var(--color-change); cursor: pointer;">
           <div class="stat-val" style="color: var(--color-change);" id="stat-change-val">0</div>
           <div class="stat-label">Changes</div>
         </div>
@@ -90,10 +90,15 @@
     <section class="search-filter-bar">
       <div class="search-box-container">
         <!-- SVG magnifying glass icon -->
-        <svg viewBox="0 0 24 24">
+        <svg class="search-icon" viewBox="0 0 24 24">
           <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
         <input type="text" id="search-input" class="search-input" placeholder="Search update notes, types, or dates..." aria-label="Search updates font text">
+        <button id="btn-search-clear" class="btn-search-clear" aria-label="Clear search input" style="display: none;">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
       </div>
       
       <div class="filter-pills" role="tablist" aria-label="Categories of updates filter tabs">
@@ -143,7 +148,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <textarea id="tweet-textarea" class="tweet-textarea" aria-label="Tweet message editor" maxlength="300"></textarea>
+        <textarea id="tweet-textarea" class="tweet-textarea" aria-label="Tweet message editor" maxlength="280"></textarea>
       </div>
       <div class="modal-footer">
         <span id="char-counter" class="char-counter">0 / 280</span>

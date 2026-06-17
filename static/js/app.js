@@ -60,12 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.focus();
   });
   
-  // Bind Interactive Stats Card Clicks
-  if (statCardAll) statCardAll.addEventListener('click', () => triggerFilter('all'));
-  if (statCardFeature) statCardFeature.addEventListener('click', () => triggerFilter('feature'));
-  if (statCardIssue) statCardIssue.addEventListener('click', () => triggerFilter('issue'));
-  if (statCardBreaking) statCardBreaking.addEventListener('click', () => triggerFilter('breaking'));
-  if (statCardChange) statCardChange.addEventListener('click', () => triggerFilter('announcement_change'));
+  // Bind Interactive Stats Card Clicks & Keydowns (Enter/Space) for accessibility
+  const statCards = [
+    { el: statCardAll, filter: 'all' },
+    { el: statCardFeature, filter: 'feature' },
+    { el: statCardIssue, filter: 'issue' },
+    { el: statCardBreaking, filter: 'breaking' },
+    { el: statCardChange, filter: 'announcement_change' }
+  ];
+  
+  statCards.forEach(card => {
+    if (card.el) {
+      card.el.addEventListener('click', () => triggerFilter(card.filter));
+      card.el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          triggerFilter(card.filter);
+        }
+      });
+    }
+  });
   
   filterPills.forEach(pill => {
     pill.addEventListener('click', (e) => {
